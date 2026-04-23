@@ -1,0 +1,18 @@
+{
+    "sourceFile": "js/terrain.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1776965243982,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1776965243982,
+            "name": "Commit-0",
+            "content": "import * as THREE from 'three';\nimport { getHeight } from './noise.js';\nimport {\n  createGroundColorTexture,\n  createGroundNormalTexture,\n  createGroundRoughnessTexture,\n} from './textures.js';\n\n// ─── Terrain ──────────────────────────────────────────────────────────────────\n\nconst TERRAIN_SIZE = 200;\nconst TERRAIN_SEGMENTS = 256;\n\n\nexport function createTerrain(scene) {\n  const geo = new THREE.PlaneGeometry(\n    TERRAIN_SIZE,\n    TERRAIN_SIZE,\n    TERRAIN_SEGMENTS,\n    TERRAIN_SEGMENTS\n  );\n\n  geo.rotateX(-Math.PI / 2);\n\n  const pos = geo.attributes.position;\n\n  let minY = Infinity;\n  let maxY = -Infinity;\n\n  for (let i = 0; i < pos.count; i++) {\n    const x = pos.getX(i);\n    const z = pos.getZ(i);\n    const y = getHeight(x, z);\n\n    pos.setY(i, y);\n\n    if (y < minY) minY = y;\n    if (y > maxY) maxY = y;\n  }\n\n  pos.needsUpdate = true;\n  geo.computeVertexNormals();\n\n \n  const lowColor  = new THREE.Color(0x8a7a50);  // levé : plus visible\n  const midColor  = new THREE.Color(0xa89060);\n  const highColor = new THREE.Color(0xd4bc88);\n  const wetColor  = new THREE.Color(0x607840);  // berges humides\n\n  const colors = [];\n\n  for (let i = 0; i < pos.count; i++) {\n    const y = pos.getY(i);\n    const x = pos.getX(i);\n    const z = pos.getZ(i);\n\n    const h = (y - minY) / Math.max(0.0001, maxY - minY);\n\n    let c;\n    if (h < 0.45) {\n      c = lowColor.clone().lerp(midColor, smoothstep(0.0, 0.45, h));\n    } else {\n      c = midColor.clone().lerp(highColor, smoothstep(0.45, 1.0, h));\n    }\n\n    const dx = x - 30, dz = z - 30;\n    const distLake = Math.sqrt(dx * dx + dz * dz);\n    const wetFactor = smoothstep(55, 38, distLake); // 1 près du lac, 0 loin\n    if (wetFactor > 0) {\n      c = c.clone().lerp(wetColor, wetFactor * 0.6);\n    }\n\n    const noiseTint = 0.94 + 0.06 * Math.sin(x * 0.08) * Math.cos(z * 0.08);\n    c.multiplyScalar(noiseTint);\n\n    colors.push(c.r, c.g, c.b);\n  }\n\n  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));\n\n  const colorTex = createGroundColorTexture(512);\n  const normalTex = createGroundNormalTexture(512);\n  const roughnessTex = createGroundRoughnessTexture(256);\n\n  colorTex.wrapS = colorTex.wrapT = THREE.RepeatWrapping;\n  normalTex.wrapS = normalTex.wrapT = THREE.RepeatWrapping;\n  roughnessTex.wrapS = roughnessTex.wrapT = THREE.RepeatWrapping;\n\n  colorTex.repeat.set(8, 8);\n  normalTex.repeat.set(8, 8);\n  roughnessTex.repeat.set(8, 8);\n\n  const mat = new THREE.MeshStandardMaterial({\n    map: colorTex,\n    normalMap: normalTex,\n    roughnessMap: roughnessTex,\n    roughness: 0.95,\n    metalness: 0.0,\n    vertexColors: true,\n  });\n\n  mat.color = new THREE.Color(0.6, 0.5, 0.35);\n\n  const mesh = new THREE.Mesh(geo, mat);\n  mesh.receiveShadow = true;\n  mesh.castShadow = false;\n\n  scene.add(mesh);\n\n  mesh.userData.getY = (x, z) => getHeight(x, z);\n\n  return mesh;\n}\n\nfunction smoothstep(min, max, value) {\n  const x = Math.max(0, Math.min(1, (value - min) / (max - min)));\n  return x * x * (3 - 2 * x);\n}"
+        }
+    ]
+}

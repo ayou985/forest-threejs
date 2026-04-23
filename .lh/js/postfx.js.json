@@ -1,0 +1,18 @@
+{
+    "sourceFile": "js/postfx.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1776965183691,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1776965183691,
+            "name": "Commit-0",
+            "content": "import * as THREE from 'three';\nimport { EffectComposer }   from 'three/addons/postprocessing/EffectComposer.js';\nimport { RenderPass }       from 'three/addons/postprocessing/RenderPass.js';\nimport { UnrealBloomPass }  from 'three/addons/postprocessing/UnrealBloomPass.js';\nimport { OutputPass }       from 'three/addons/postprocessing/OutputPass.js';\n\n\n\nexport function createPostProcessing(renderer, scene, camera) {\n  const composer = new EffectComposer(renderer);\n\n  composer.addPass(new RenderPass(scene, camera));\n\n  const bloom = new UnrealBloomPass(\n    new THREE.Vector2(window.innerWidth, window.innerHeight),\n     0.28,\n     0.4,\n     0.95\n  );\n  composer.addPass(bloom);\n\n  \n  composer.addPass(new OutputPass());\n\n\n  composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));\n  composer.setSize(window.innerWidth, window.innerHeight);\n\n  return composer;\n}\n"
+        }
+    ]
+}

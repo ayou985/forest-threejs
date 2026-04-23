@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forest Scene – Three.js</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; background: #000; font-family: monospace; }
+    canvas { display: block; }
+    #hud {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      color: #fff;
+      font-size: 12px;
+      background: rgba(0,0,0,0.45);
+      padding: 6px 12px;
+      border-radius: 6px;
+      pointer-events: none;
+      line-height: 1.7;
+    }
+    #loading {
+      position: fixed;
+      inset: 0;
+      background: #0a1a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #7fcf5e;
+      font-size: 18px;
+      z-index: 100;
+      transition: opacity 0.8s;
+    }
+    #loading-bar-wrap {
+      margin-top: 20px;
+      width: 260px;
+      height: 4px;
+      background: #1a3a1a;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    #loading-bar {
+      height: 100%;
+      background: #7fcf5e;
+      width: 0%;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <span>Génération de la forêt…</span>
+    <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
+  </div>
+  <div id="hud">
+    <div>FPS : <span id="fps">--</span></div>
+    <div>Polygones : <span id="polys">--</span></div>
+    <div style="margin-top:4px;color:#aaa;font-size:10px">Clic + drag : orbite &nbsp;|&nbsp; Molette : zoom</div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

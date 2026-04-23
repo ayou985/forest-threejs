@@ -1,0 +1,18 @@
+{
+    "sourceFile": "js/sky.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1776965199513,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1776965199513,
+            "name": "Commit-0",
+            "content": "import * as THREE from 'three';\nimport { Sky } from 'three/addons/objects/Sky.js';\n\nexport function createSky(scene, renderer) {\n  const sky = new Sky();\n  sky.scale.setScalar(10000);\n  scene.add(sky);\n\n  const uniforms = sky.material.uniforms;\n\n  uniforms['turbidity'].value = 5;\n  uniforms['rayleigh'].value = 1.2;\n  uniforms['mieCoefficient'].value = 0.008;\n  uniforms['mieDirectionalG'].value = 0.85;\n\n  const elevation = 6;\n  const azimuth = 180;\n\n  const phi = THREE.MathUtils.degToRad(90 - elevation);\n  const theta = THREE.MathUtils.degToRad(azimuth);\n\n  const sun = new THREE.Vector3();\n  sun.setFromSphericalCoords(1, phi, theta);\n\n  uniforms['sunPosition'].value.copy(sun);\n\n  const pmrem = new THREE.PMREMGenerator(renderer);\n  const envScene = new THREE.Scene();\n  const envSky = sky.clone();\n  envScene.add(envSky);\n\n  const envMap = pmrem.fromScene(envScene).texture;\n  scene.environment = envMap;\n\n  pmrem.dispose();\n\n  return { sky, sun };\n}"
+        }
+    ]
+}
